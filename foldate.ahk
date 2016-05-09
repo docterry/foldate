@@ -35,6 +35,8 @@ Loop, Files, *, D
 		dt := ExifBreakDT(PropItem.Value)
 		if !(dt)
 			continue
+		IfNotExist, % dt.YR "-" dt.MO "-" dt.DY
+			FileCreateDir, % dt.YR "-" dt.MO "-" dt.DY
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
 		FileMove, %idxFull%, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
