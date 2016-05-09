@@ -34,9 +34,25 @@ Loop, Files, *, D
 		dt := ExifBreakDT(PropItem.Value)
 		if !(dt)
 			continue
+		destDir := dt.YR "-" dt.MO "-" dt.DY
+		IfNotExist, %destDir%
+			FileCreateDir, %destDir%
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
-		FileMove, %idxFull%, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
+		FileMove, %idxFull%, %destDir%					 								; move file to proper folder
+	}
+}
+
+Loop, Files, *, D																		; Clean up empty dirs
+{
+	idxDir := A_LoopFileName															; ensure that we only process copied dirs
+	if !(idxDir~="^\d{4}-\d{2}-\d{2}$")
+		continue
+	IfExist, %idxDir%\*.jpg																; keep folders with JPGs in them
+	{
+		continue
+	} else {																			; delete ones without JPGs
+		FileRemoveDir, %idxDir%, 1 
 	}
 }
 
