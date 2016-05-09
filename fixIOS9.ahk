@@ -1,0 +1,62 @@
+/* fixIOS9 fixes broken IOS9 downloads
+*/
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+Clipboard = 	; Empty the clipboard
+SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+
+SplitPath, A_ScriptDir,,fileDir
+IfInString, fileDir, AhkProjects					; Change enviroment if run from development vs production directory
+{
+	isDevt := true
+	SetWorkingDir, C:\Users\%A_UserName%\Downloads\photos
+} else {
+	isDevt := false
+	SetWorkingDir, %A_ScriptDir%
+}
+
+Loop, Files, *, DFR
+{
+	idxName := A_LoopFileName
+	idxDir := A_LoopFileDir
+	idxFull := A_LoopFileFullPath
+	idxFullDir := A_LoopFileLongPath
+	
+	if !(idxDir~="\b\d{4}-\d{2}-\d{2}")
+		continue
+	if (A_LoopFileExt != "jpg") 
+		continue
+	
+	PropID := 0x9003 ; ExifDTOrig - Date & time of original
+	GDIPToken := Gdip_Startup()
+	GDIPImage := Gdip_LoadImageFromFile(idxFull)
+	PropItem := Gdip_GetPropertyItem(GDIPImage, PropID)
+	Gdip_DisposeImage(GDIPImage)
+	Gdip_ShutDown(GDIPToken)
+	
+	dt := ExifBreakDT(PropItem.Value)
+	if !(dt)
+		continue
+	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M
+	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C
+	FileMove, % idxFull, % dt.YR "-" dt.MO "-" dt.DY
+}
+
+ExitApp
+
+ExifBreakDT(dt) {
+	if !RegExMatch(dt,"O)\b\d{4}[:/-]\d{2}[:/-]\d{2}\b",date)
+		return Error
+	if !RegExMatch(dt,"O)\b\d{2}[:/-]\d{2}[:/-]\d{2}\b",time)
+		return Error
+	dateY := strX(date.value,"",1,0,":",1,1,nn)
+	dateM := strX(date.value,":",nn,1,":",1,1,nn)
+	dateD := strX(date.value,":",nn,1,"",1)
+	timeH := strX(time.value,"",1,0,":",1,1,nn)
+	timeM := strX(time.value,":",nn,1,":",1,1,nn)
+	timeS := strX(time.value,":",nn,1,"",1)
+	return {YR:dateY,MO:dateM,DY:dateD,HR:timeH,MIN:timeM,SEC:timeS}
+}
+
+#Include strx.ahk
+#Include Gdip_All.ahk
+#Include Gdip_ImgProps.ahk
