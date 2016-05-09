@@ -21,9 +21,7 @@ Loop, Files, *, D
 		continue
 	Loop, Files, %idxDir%\*
 	{
-		idxName := A_LoopFileDir
 		idxFull := A_LoopFileFullPath
-		idxFullDir := A_LoopFileLongPath
 		if (A_LoopFileExt != "jpg") 									; only process JPG files within those folders
 			continue
 		
@@ -38,7 +36,7 @@ Loop, Files, *, D
 			continue
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
-		FileMove, % idxFull, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
+		FileMove, %idxFull%, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
 	}
 }
 
