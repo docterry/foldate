@@ -20,7 +20,11 @@ Loop, Files, *, DFR
 	idxName := A_LoopFileName
 	idxDir := A_LoopFileDir
 	idxFull := A_LoopFileFullPath
-	if (A_LoopFileExt != "jpg") 
+	idxFullDir := A_LoopFileLongPath
+	
+	if !(idxDir~="\b\d{4}-\d{2}-\d{2}\b")							; only process folders with name 2015-09-03 structure
+		continue
+	if (A_LoopFileExt != "jpg") 									; only process JPG files within those folders
 		continue
 	
 	PropID := 0x9003 ; ExifDTOrig - Date & time of original
@@ -33,9 +37,9 @@ Loop, Files, *, DFR
 	dt := ExifBreakDT(PropItem.Value)
 	if !(dt)
 		continue
-	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M
-	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C
-	FileMove, % idxFull, % dt.YR "-" dt.MO "-" dt.DY
+	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
+	FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
+	FileMove, % idxFull, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
 }
 
 loop, Files, * , D
