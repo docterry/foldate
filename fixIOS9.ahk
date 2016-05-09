@@ -41,6 +41,7 @@ Loop, Files, *, DFR
 	FileMove, % idxFull, % dt.YR "-" dt.MO "-" dt.DY								; move file to proper folder
 }
 
+MsgBox Done!
 ExitApp
 
 ExifBreakDT(dt) {
