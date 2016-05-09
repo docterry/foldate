@@ -35,11 +35,13 @@ Loop, Files, *, D
 		if !(dt)
 			continue
 		destDir := dt.YR "-" dt.MO "-" dt.DY
-		IfNotExist, %destDir%
+		if !instr(FileExist(destDir),"D")
+		{
 			FileCreateDir, %destDir%
+		}
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
-		FileMove, %idxFull%, %destDir%					 								; move file to proper folder
+		FileMove, %idxFull%, % destDir										 			; move file to proper folder
 	}
 }
 
