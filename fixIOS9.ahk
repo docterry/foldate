@@ -41,7 +41,8 @@ Loop, Files, *, D
 		}
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
-		FileMove, %idxFull%, % destDir										 			; move file to proper folder
+		FileMove, %idxFull%, % destDir													; move file to proper folder
+		;FileDelete, %idxDir%\.picasa.ini												; remove .picasa.ini files
 	}
 }
 
@@ -54,7 +55,7 @@ Loop, Files, *, D																		; Clean up empty dirs
 	{
 		continue
 	} else {																			; delete ones without JPGs
-		FileRemoveDir, %idxDir%, 1 
+		FileRemoveDir, %idxDir%
 	}
 }
 
