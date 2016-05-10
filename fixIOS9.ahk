@@ -3,6 +3,7 @@
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 Clipboard = 	; Empty the clipboard
 SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+FileInstall, exiftool.exe, exiftool.exe
 
 SplitPath, A_ScriptDir,,fileDir
 IfInString, fileDir, AhkProjects					; Change enviroment if run from development vs production directory
@@ -90,4 +91,3 @@ ExifBreakDT(dt) {
 #Include strx.ahk
 #Include Gdip_All.ahk
 #Include Gdip_ImgProps.ahk
-FileInstall, exiftool.exe, exiftool.exe
