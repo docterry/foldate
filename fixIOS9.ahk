@@ -21,20 +21,33 @@ Loop, Files, *, D
 		continue
 	Loop, Files, %idxDir%\*
 	{
+		dt :=
 		idxFull := A_LoopFileFullPath
-		if (A_LoopFileExt != "jpg") 									; only process JPG files within those folders
-			continue
-		
-		PropID := 0x9003 ; ExifDTOrig - Date & time of original
-		GDIPToken := Gdip_Startup()
-		GDIPImage := Gdip_LoadImageFromFile(idxFull)
-		PropItem := Gdip_GetPropertyItem(GDIPImage, PropID)
-		Gdip_DisposeImage(GDIPImage)
-		Gdip_ShutDown(GDIPToken)
-		dt := ExifBreakDT(PropItem.Value)
+		idxFile := A_LoopFileName
+		idxExt := A_LoopFileExt
+		if (idxExt = "jpg") { 															; process JPG files within those folders
+			SplashImage,,,%idxFile%, Processing JPG
+			PropID := 0x9003 ; ExifDTOrig - Date & time of original
+			GDIPToken := Gdip_Startup()
+			GDIPImage := Gdip_LoadImageFromFile(idxFull)
+			PropItem := Gdip_GetPropertyItem(GDIPImage, PropID)
+			Gdip_DisposeImage(GDIPImage)
+			Gdip_ShutDown(GDIPToken)
+			dt := ExifBreakDT(PropItem.Value)
+		} 
+		if (idxExt = "mov") {															; process MOV files
+			SplashImage,,,%idxFile%, Processing JPG
+			RunWait %A_ScriptDir%\exiftool.exe -w! txt -CreateDate -S %idxFull% ,, Hide
+			exifTxt := RegExReplace(idxFull,"i)mov$") "txt"
+			FileRead, cdate, %exifTxt%
+			FileDelete %exifTxt%
+			dt := ExifBreakDT(cdate)
+		} 
 		if !(dt)																		; no date, skip
 			continue
+		
 		destDir := dt.YR "-" dt.MO "-" dt.DY
+		
 		if !instr(FileExist(destDir),"D")
 		{
 			FileCreateDir, %destDir%
@@ -44,20 +57,16 @@ Loop, Files, *, D
 		if (destDir=idxDir) 															; already in correct folder, skip move
 			continue
 		FileMove, %idxFull%, % destDir													; move file to proper folder
-		FileDelete, %idxDir%\.picasa.ini												; remove .picasa.ini files
 	}
 }
+SplashImage, off
 
 Loop, Files, *, D																		; Clean up empty dirs
 {
 	idxDir := A_LoopFileName															; ensure that we only process copied dirs
-	if !(idxDir~="^\d{4}-\d{2}-\d{2}$")
-		continue
-	IfExist, %idxDir%\*.jpg																; keep folders with JPGs in them
-	{
-		continue
-	} else {																			; delete ones without JPGs
-		FileRemoveDir, %idxDir%
+	if (idxDir~="^\d{4}-\d{2}-\d{2}$") {
+		FileDelete, %idxDir%\.picasa.ini												; remove .picasa.ini files
+		FileRemoveDir, %idxDir%															; remove completely empty folders
 	}
 }
 
@@ -81,3 +90,4 @@ ExifBreakDT(dt) {
 #Include strx.ahk
 #Include Gdip_All.ahk
 #Include Gdip_ImgProps.ahk
+FileInstall, exiftool.exe, exiftool.exe
