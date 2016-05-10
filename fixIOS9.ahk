@@ -32,7 +32,7 @@ Loop, Files, *, D
 		Gdip_DisposeImage(GDIPImage)
 		Gdip_ShutDown(GDIPToken)
 		dt := ExifBreakDT(PropItem.Value)
-		if !(dt)
+		if !(dt)																		; no date, skip
 			continue
 		destDir := dt.YR "-" dt.MO "-" dt.DY
 		if !instr(FileExist(destDir),"D")
@@ -41,8 +41,10 @@ Loop, Files, *, D
 		}
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
+		if (destDir=idxDir) 															; already in correct folder, skip move
+			continue
 		FileMove, %idxFull%, % destDir													; move file to proper folder
-		;FileDelete, %idxDir%\.picasa.ini												; remove .picasa.ini files
+		FileDelete, %idxDir%\.picasa.ini												; remove .picasa.ini files
 	}
 }
 
