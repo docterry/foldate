@@ -18,8 +18,9 @@ IfInString, fileDir, AhkProjects					; Change enviroment if run from development
 Loop, Files, *, D
 {
 	idxDir := A_LoopFileName
-	if !(idxDir~="^\d{4}-\d{2}-\d{2}$")							; only process folders with name 2015-09-03 structure
+	if !(idxDir~="^\d{4}-\d{2}-\d{2}$") {												; only process folders with name 2015-09-03 structure
 		continue
+	}
 	Loop, Files, %idxDir%\*
 	{
 		dt :=
@@ -44,19 +45,21 @@ Loop, Files, *, D
 			FileDelete %exifTxt%
 			dt := ExifBreakDT(cdate)
 		} 
-		if !(dt)																		; no date, skip
+		if !IsObject(dt) {																; no date, skip
 			continue
-		
-		destDir := dt.YR "-" dt.MO "-" dt.DY
-		
-		if !instr(FileExist(destDir),"D")
-		{
-			FileCreateDir, %destDir%
 		}
+		
+		destDir := dt.YR "-" dt.MO "-" dt.DY											; ensure there is a proper destDir
+		
+		if !instr(FileExist(destDir),"D") {
+			FileCreateDir, %destDir%													; create destDir if needed
+		}
+		
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, C		; set Created date
-		if (destDir=idxDir) 															; already in correct folder, skip move
+		if (destDir=idxDir) { 															; already in correct folder, skip move
 			continue
+		}
 		FileMove, %idxFull%, % destDir													; move file to proper folder
 	}
 }
@@ -115,10 +118,12 @@ MsgBox,,Summary
 Exit
 
 ExifBreakDT(dt) {
-	if !RegExMatch(dt,"O)\b\d{4}[:/-]\d{2}[:/-]\d{2}\b",date)
+	if !RegExMatch(dt,"O)\b\d{4}[:/-]\d{2}[:/-]\d{2}\b",date) {
 		return Error
-	if !RegExMatch(dt,"O)\b\d{2}[:/-]\d{2}[:/-]\d{2}\b",time)
+	}
+	if !RegExMatch(dt,"O)\b\d{2}[:/-]\d{2}[:/-]\d{2}\b",time) {
 		return Error
+	}
 	dateY := strX(date.value,"",1,0,":",1,1,nn)
 	dateM := strX(date.value,":",nn,1,":",1,1,nn)
 	dateD := strX(date.value,":",nn,1,"",1)
