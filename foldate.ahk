@@ -37,7 +37,7 @@ Loop, Files, *, D
 			dt := ExifBreakDT(PropItem.Value)
 		} 
 		if (idxExt = "mov") {															; process MOV files
-			SplashImage,,,%idxFile%, Processing JPG
+			SplashImage,,,%idxFile%, Processing MOV
 			RunWait %A_ScriptDir%\exiftool.exe -w! txt -CreateDate -S %idxFull% ,, Hide
 			exifTxt := RegExReplace(idxFull,"i)mov$") "txt"
 			FileRead, cdate, %exifTxt%
