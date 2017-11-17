@@ -98,6 +98,7 @@ loop, Files, * , D																		; move the yyyy-mm-dd folders into yy-mm/dd 
 		}
 		
 		FileMoveDir, %idxName%, %newDir%\%newDirDY%, 2									; move proper dir into the newdir, don't fail if exists
+		FileSetTime, newDirYR . newDirMO . newDirDY , %newDir%\%newDirDY% , M, 2		; adjust mod date for newDir\DY
 		FileSetTime, newDirYR . newDIRMO , %newDir% , M, 2								; adjust mod date for newDir
 		ctMove += 1																		; increment moved dir counter
 	}
