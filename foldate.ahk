@@ -52,7 +52,7 @@ Loop, Files, *, D
 		destDir := dt.YR "-" dt.MO "-" dt.DY											; ensure there is a proper destDir
 		
 		if !instr(FileExist(destDir),"D") {
-			FileCreateDir, %destDir%													; create destDir if needed
+			FileCreateDir, %destDir%													; create destDir for each file as needed
 		}
 		
 		FileSetTime, dt.YR . dt.MO . dt.DY . dt.HR . dt.MIN . dt.SEC, %idxFull%, M		; set Modified date
@@ -74,29 +74,29 @@ Loop, Files, *, D																		; Clean up empty dirs
 	}
 }
 
-loop, Files, * , D
+loop, Files, * , D																		; move the yyyy-mm-dd folders into yy-mm/dd structure
 {
 	idxName := A_LoopFileName
 	idxDir := A_LoopFileDir
 	SplashImage,,,, Converting folder dates
 	
-	if RegExMatch(idxName,"^\d{4}\-\d{2}\-\d{2}$") {
-		newDir := SubStr(idxName,1,7)
+	if RegExMatch(idxName,"^\d{4}\-\d{2}\-\d{2}$") {									; idxName matches yyyy-mm-dd
+		newDir := SubStr(idxName,1,7)													; newDir is yyyy-mm
 		newDirYR := "" . SubStr(idxName,1,4) . ""
 		newDirMO := "" . SubStr(idxName,6,2) . ""
 		newDirDY := "" . SubStr(idxName,9,2) . ""
-		FileSetTime, newDirYR . newDirMO . newDirDY , %idxName% , C, 2
+		FileSetTime, newDirYR . newDirMO . newDirDY , %idxName% , C, 2					; set creation date of folder to match name
 		
-		IfNotExist %newDir% 
+		IfNotExist %newDir% 															; newDir does not exist?
 		{
-			FileCreateDir, %newDir%
-			FileSetTime, newDirYR . newDirMO , %newDir% , C, 2
-			ctDir += 1
+			FileCreateDir, %newDir%														; create it
+			FileSetTime, newDirYR . newDirMO , %newDir% , C, 2							; and set created date to yyyymm
+			ctDir += 1																	; increment created dir counter
 		}
 		
-		FileMoveDir, %idxName%, %newDir%\%newDirDY%
-		FileSetTime, newDirYR . newDIRMO , %newDir% , M, 2
-		ctMove += 1
+		FileMoveDir, %idxName%, %newDir%\%newDirDY%										; move proper dir into the newdir
+		FileSetTime, newDirYR . newDIRMO , %newDir% , M, 2								; adjust mod date for newDir
+		ctMove += 1																		; increment moved dir counter
 	}
 	if RegExMatch(idxName,"^\d{4}\-\d{2}$") {
 		parseDate(idxName)
