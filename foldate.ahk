@@ -1,4 +1,7 @@
-/* FolDate recursive set Created and Modified dates of directory to name of folders
+/*	FolDate 
+		- Fixes broken dates from iOS9 bug
+		- Move files from YYYY-MM-DD into YYYY-MM\DD structure
+		- Recursive set Created and Modified dates of directory to name of folders
 */
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 Clipboard = 	; Empty the clipboard
