@@ -38,7 +38,7 @@ Loop, Files, *, D
 		} 
 		if (idxExt = "mov") {															; process MOV files
 			SplashImage,,,%idxFile%, Processing MOV
-			RunWait %A_ScriptDir%\exiftool.exe -w! txt -CreateDate -S %idxFull% ,, Hide
+			RunWait %A_ScriptDir%\exiftool.exe -w! txt -CreationDate -S %idxFull% ,, Hide
 			exifTxt := RegExReplace(idxFull,"i)mov$") "txt"
 			FileRead, cdate, %exifTxt%
 			FileDelete %exifTxt%
