@@ -303,5 +303,6 @@ ObjHasValue(aObj, aValue, rx:="") {
 }
 
 #Include strx.ahk
+#Include CMsgBox.ahk
 #Include Gdip_All.ahk
 #Include Gdip_ImgProps.ahk
