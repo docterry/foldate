@@ -14,25 +14,70 @@ photoDir := A_MyDocuments "\..\Pictures\photos"
 
 loop, Files, %photoDir%\*, FR
 {
-	if !(A_LoopFileExt~="i)MOV|AVI|MP4|MTS") {
+	if !(A_LoopFileExt~="i)MOV|AVI|MP4|MTS") {											; skip non-video types
 		continue
 	}
-	Dir := strX(A_LoopFileDir,"photos\",1,7,"",0)
-	DirYM := strX(Dir,"",1,0,"\",1,1)
-	DirYYYY := strX(DirYM,"",1,0,"-",1,1)
-	DirMM := strX(DirYM,"-",1,1,"",0)
-	DirDD := strX(Dir,"\",1,1,"",0)
+	fnam := A_LoopFileName																; fnam = filename only
+	fullname := A_LoopFileLongPath														; fullname = full path + filename
+	Dir := strX(A_LoopFileDir,"photos\",1,7,"",0)										; dir = 2017-03\11
+	SplashImage,,,% dir "\" fnam, Processing file
+
+	DirYYYY := strX(Dir,"",1,0,"-",1,1)													; 2017
+	DirMM := strX(Dir,"-",1,1,"\",1,1)													; 03
+	DirDD := strX(Dir,"\",1,1,"",0)														; 11
 	
-	fnam := A_LoopFileName
-	fullname := A_LoopFileLongPath
-	dt := getExifDate(fullname)
+	FileGetTime, fileDT, %fullname%, C													; fileDT = file creation DT
 	
-	if !(Dir = dt.YYYY "-" dt.MM "\" dt.DD) {
-		FileDelete, text.txt
-		FileAppend, % dt.txt, text.txt
-		MsgBox,,% Dir "\" fnam
-			, % dt.YYYY "-" dt.MM "-" dt.DD "`n"
-			. dt.hr ":" dt.min ":" dt.sec
+	dt := getExifDate(fullname)															; fetch CreationDate > CreateDate > DateTimeOriginal
+	exifTS := dt.YYYY . dt.MM . dt.DD . dt.hr . dt.min . dt.sec
+	
+	if (fnam~="VID\d{5}") {																; skip converted VID00001 files from Flip
+		;~ continue
+	}
+	
+	if !(fileDT=exifTS) {																; mismatch between file and exif TS
+		SplashImage, off
+		FileDelete, dump.txt
+		FileAppend, % dt.txt, dump.txt													; writeout exif dump into script dir
+		cmb := Cmsgbox("Timestamp mismatch"
+			, "Which TS to keep?`n`n" Dir "`n" fnam
+			, "file  " fileDT "|exif " exifTS)
+		if instr(cmb,"exif") {															; select keep EXIF button
+			FileSetTime, exifTS, %fullname% , C											; change C and M file timestamps
+			FileSetTime, exifTS, %fullname% , M
+		}
+	}
+	
+	if !(Dir = dt.YYYY "-" dt.MM "\" dt.DD) {											; exif date does not match stored Dir
+		SplashImage, off
+		FileDelete, dump.txt
+		FileAppend, % dt.txt, dump.txt													; writeout exif dump into script dir
+		MsgBox, 52, File dir mismatch
+		, % "exif: " dt.YYYY "-" dt.MM "-" dt.DD "`n"
+		.	"dir: " Dir "`n`n"
+		.	"Move file to proper dir?"
+		IfMsgBox, Yes
+		{
+			newDirYM := dt.YYYY "-" dt.MM
+			newDirDD := dt.DD
+			IfNotExist %photoDir%\%newDirYM%											; newDir does not exist?
+			{
+				FileCreateDir, %photoDir%\%newDirYM%									; create it
+				FileSetTime, dt.YYYY . dt.MM , %photoDir%\%newDirYM% , C, 2				; and set created date to yyyymm
+			}
+			IfNotExist %photoDir%\%newDirYM%\%newDirDD%									; newDirYM\DD doesnot exist?
+			{
+				FileCreateDir, %photoDir%\%newDirYM%\%newDirDD%
+				FileSetTime, dt.YYYY . dt.MM . dt.DD, %photoDir%\%newDirYM%\%newDirDD% , C, 2
+			}
+			FileCopy, %photoDir%\%dir%\%fnam%											; copy fnam to new folder
+				, %photoDir%\%newDirYM%\%newDirDD%\%fnam%, 1
+			FileSetTime, dt.YYYY dt.MM dt.DD dt.hr dt.min dt.sec						; set C and M timestamps for file
+				, %photoDir%\%newDirYM%\%newDirDD%\%fnam% , C
+			FileSetTime, dt.YYYY dt.MM dt.DD dt.hr dt.min dt.sec
+				, %photoDir%\%newDirYM%\%newDirDD%\%fnam% , M
+			FileDelete, %photoDir%\%dir%\%fnam%											; delete old file
+		}
 	}
 }
 ExitApp
@@ -141,7 +186,6 @@ MsgBox,,Summary
 Exit
 
 getExifDate(fn) {
-	SplashImage,,,%fn%, Processing file
 	RunWait %A_ScriptDir%\exiftool.exe -f -w! txt -S %fn% ,, Hide
 	fnTxt := strX(fn,"",1,0,".",0) ".txt"
 	FileRead, txt, %fnTxt%
