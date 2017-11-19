@@ -32,7 +32,7 @@ loop, Files, %photoDir%\*, FR
 	exifTS := dt.YYYY . dt.MM . dt.DD . dt.hr . dt.min . dt.sec
 	
 	if (fnam~="VID\d{5}") {																; skip converted VID00001 files from Flip
-		;~ continue
+		continue
 	}
 	
 	if !(fileDT=exifTS) {																; mismatch between file and exif TS
