@@ -201,7 +201,7 @@ getExifDate(fn) {
 }
 
 readVal(lbl,txt) {
-	x := stregX(txt,"^" lbl ":",1,1,"[\r\n]+",1)
+	x := stregX(txt,"^" lbl ":",1,1,"[-\r\n]+",1)
 	return x
 }
 
