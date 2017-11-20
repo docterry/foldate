@@ -58,7 +58,7 @@ loop, Files, %photoDir%\*, FR
 	FileSetTime, exifTS, %newName%, C
 	FileSetTime, exifTS, %newName%, M
 	
-	MsgBox, 52, Delete, % "Remove original?`n`n" Dir fnam
+	MsgBox, 52, Delete, % "Remove original?`n`n" Dir "\" fnam
 	IfMsgBox, Yes
 	{
 		FileDelete, %fullname%
