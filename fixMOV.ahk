@@ -12,8 +12,6 @@ FileInstall, exiftool.exe, exiftool.exe
 
 photoDir := A_MyDocuments "\..\Pictures"
 ffmpeg := "c:\Programs\ffmpeg\ffmpeg.exe"
-codec := {"MOV":"-vcodec h264"
-		, "AVI":"-vcodec mpeg4"}
 
 loop, Files, %photoDir%\*, FR
 {
