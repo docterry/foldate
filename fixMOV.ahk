@@ -1,8 +1,8 @@
 /*	FixMOV
-		- Scan Pictures/YYYY-MM/DD folders for video: MOV, AVI, MTS
-		- Check file mod/created date
-		- Check exiftool for creation date
-		- Move and set Created and Modified dates if needed
+		- Scan Pictures/Photos/YYYY-MM/DD folders for video: MOV, AVI, MTS
+		- Convert to MP4
+		- Maintain metadata and/or creation timestamp
+		- Delete original file
 */
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 Clipboard = 	; Empty the clipboard
