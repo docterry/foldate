@@ -18,7 +18,7 @@ codec := {"MOV":"-vcodec h264"
 loop, Files, %photoDir%\*, FR
 {
 	fext := A_LoopFileExt
-	if !(fext~="i)MTS|m2ts") {													; skip non-video types
+	if !(fext~="i)AVI|MOV|MTS") {													; skip non-video types
 		continue
 	}
 	
