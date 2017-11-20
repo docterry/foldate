@@ -10,7 +10,7 @@ SendMode Input ; Recommended for new scripts due to its superior speed and relia
 SetWorkingDir, %A_ScriptDir%
 FileInstall, exiftool.exe, exiftool.exe
 
-photoDir := A_MyDocuments "\..\Pictures"
+photoDir := A_MyDocuments "\..\Pictures\photos"
 ffmpeg := "c:\Programs\ffmpeg\ffmpeg.exe"
 
 loop, Files, %photoDir%\*, FR
