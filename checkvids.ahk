@@ -192,6 +192,7 @@ getExifDate(fn) {
 	FileDelete, %fnTxt%
 	
 	if (cdate := readVal("CreationDate",txt)) {
+	} else if (cdate := readVal("MediaCreateDate",txt)) {
 	} else if (cdate := readVal("CreateDate",txt)) {
 	} else if (cdate := readVal("DateTimeOriginal",txt)) {
 	}
