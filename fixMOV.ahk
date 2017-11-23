@@ -45,7 +45,7 @@ loop, Files, %photoDir%\*, FR
 		ffcodec := "-vcodec h264 -metadata ""creation_time=" dt.YYYY "-" dt.MM "-" dt.DD " " dt.hr ":" dt.min ":" dt.sec """ "
 	}
 	if (readVal("VideoCodec",dt.txt)) {													; AVI files
-		ffcodec := "-vcodec mpeg4 -map_metadata 0 "
+		ffcodec := "-vcodec h264 -pix_fmt yuv420p -crf 18 -map_metadata 0 "
 	}
 	if (ffcodec="") {
 		MsgBox no codec
